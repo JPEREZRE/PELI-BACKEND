@@ -1,10 +1,12 @@
 const { Router } = require('express');
 const Director = require('../models/Director');
 const { validationResult, check } = require('express-validator');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
-router.get('/', async function (req, res) {
+router.get('/', [validarJWT, validarRolAdmin], async function (req, res) {
     
     try{
 
@@ -19,7 +21,7 @@ router.get('/', async function (req, res) {
   });
 
 
-  router.post('/', [
+  router.post('/', [validarJWT, validarRolAdmin], [
       check('nombre', 'invalid.nombre').not().isEmpty(),
       check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
   ],  async function (req, res) {
@@ -51,7 +53,7 @@ router.get('/', async function (req, res) {
   });
 
 
-  router.put('/:directorId', [
+  router.put('/:directorId', [validarJWT, validarRolAdmin], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('estado', 'invalid.estado').isIn(['Activo', 'Inactivo']),
 ],  async function (req, res) {

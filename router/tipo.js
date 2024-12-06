@@ -1,11 +1,13 @@
 const { Router } = require('express');
 const Tipo = require('../models/Tipo');
 const { validationResult, check } = require('express-validator');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
 // Listar tipos
-router.get('/', async function (req, res) {
+router.get('/',  [validarJWT, validarRolAdmin], async function (req, res) {
     
     try {
 
@@ -20,7 +22,7 @@ router.get('/', async function (req, res) {
   });
 
   // POST method route
-router.post('/', [
+router.post('/', [validarJWT, validarRolAdmin], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('descripcion', 'invalid.descripcion').not().isEmpty(),
 ], async function (req, res) {
@@ -50,7 +52,7 @@ router.post('/', [
   });
 
   // PUT method route
-router.put('/:tipoId', [
+router.put('/:tipoId', [validarJWT, validarRolAdmin], [
     check('nombre', 'invalid.nombre').not().isEmpty(),
     check('descripcion', 'invalid.descripcion').not().isEmpty(),
 ], async function (req, res) {

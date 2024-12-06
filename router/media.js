@@ -1,10 +1,12 @@
 const { Router } = require('express');
-const Media = require('..//models/Media')
-const { validationResult, check } = require('express-validator')
+const Media = require('..//models/Media');
+const { validationResult, check } = require('express-validator');
+const { validarJWT } = require('../middleware/validar-jwt');
+const { validarRolAdmin } = require('../middleware/validar-rol-admin');
 
 const router = Router();
 
-router.post('/', [
+router.post('/',  [validarJWT, validarRolAdmin], [
     check('serial', 'invalid.serial').not().isEmpty(),
     check('titulo', 'invalid.titulo').not().isEmpty(),
     check('sinopsis', 'invalid.sinopsis').not().isEmpty(),
@@ -57,7 +59,7 @@ router.post('/', [
 
 
 // Listar peliculas
-router.get('/', async function (req, res) {
+router.get('/', [validarJWT], async function (req, res) {
     
     try {
 
@@ -86,7 +88,7 @@ router.get('/', async function (req, res) {
     
   });
 
-  router.put('/:peliculaId', [
+  router.put('/:peliculaId', [validarJWT, validarRolAdmin], [
     check('serial', 'invalid.serial').not().isEmpty(),
     check('titulo', 'invalid.titulo').not().isEmpty(),
     check('sinopsis', 'invalid.sinopsis').not().isEmpty(),

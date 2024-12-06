@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const bcrypt   = require('bcryptjs');
 
 
 const UsuarioSchema = Schema({
@@ -11,5 +12,24 @@ const UsuarioSchema = Schema({
     fechaActualizacion: { type: Date, required: true},
     
 });
+
+UsuarioSchema.pre('save', async function (next) {
+    
+    if (!this.isModified('password')) return next();
+
+    try {
+        
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+UsuarioSchema.methods.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = model('Usuario', UsuarioSchema);
